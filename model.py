@@ -1,15 +1,37 @@
 from xgboost import XGBClassifier
 import joblib
 from sklearn.feature_extraction.text import CountVectorizer
+import speech_recognition as sr
+from pydub import AudioSegment
+import soundfile as sf
+
+# Create a Recognizer instance
+recognizer = sr.Recognizer()
+
 
 
 # Load the saved model
 loaded_model = joblib.load('xgb_model.pkl')
 loaded_vectorizer = joblib.load('fitted_vectorizer.pkl')
+
 # Initializing a CountVectorizer to convert text into numerical features, limiting to 100 features
 
 
-def predict(input_text):
+def predict(filename):
+
+
+    audio = AudioSegment.from_file(filename)
+    audio.export('output.wav', format='wav')
+
+    data, samplerate = sf.read(filename)
+
+    # Convert audio to text
+    with sr.AudioFile('output.wav') as source:
+        audio_data = recognizer.record(source)
+        input_text = recognizer.recognize_google(audio_data)
+
+    print(input_text)
+
     text_transformed = loaded_vectorizer.transform([input_text])
     text_array = text_transformed.toarray()
     
