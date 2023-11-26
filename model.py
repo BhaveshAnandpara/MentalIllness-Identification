@@ -25,7 +25,7 @@ def predict(filename):
     data, samplerate = sf.read(filename)
 
     # Convert audio to text
-    with sr.AudioFile(filename) as source:
+    with sr.AudioFile('output.wav') as source:
         audio_data = recognizer.record(source)
         input_text = recognizer.recognize_google(audio_data)
 

@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from model import predict
 from flask_cors import CORS
+from pydub import AudioSegment
 
 app = Flask(__name__)
 CORS(app, resources={r"/predict": {"origins": "http://localhost:3000"}})  # Allow only requests from http://localhost:3000
@@ -21,8 +22,18 @@ def get_prediction():
 
     # Example: Save the file to a folder named 'uploads'
     audio_file.save('uploads/' + audio_file.filename)
-    audio_file.filename = "./uploads/" + audio_file.filename
-    prediction = predict( audio_file.filename )
+    file_path = "uploads/" + audio_file.filename
+
+
+    # Check if the file is an MP3 and convert it to WAV
+    if audio_file.filename.lower().endswith('.mp3'):
+        print(file_path)
+        audio = AudioSegment.from_file(file_path)
+        wav_file_path = 'uploads/' + audio_file.filename.replace('.mp3', '.wav')
+        audio.export(wav_file_path, format='wav')
+        file_path = wav_file_path  # Update the file path to the converted WAV file
+
+    prediction = predict( file_path )
 
     # Add CORS headers to the response
     response = jsonify({'prediction': prediction})
