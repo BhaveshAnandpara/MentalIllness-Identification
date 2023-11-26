@@ -9,7 +9,6 @@ import soundfile as sf
 recognizer = sr.Recognizer()
 
 
-
 # Load the saved model
 loaded_model = joblib.load('xgb_model.pkl')
 loaded_vectorizer = joblib.load('fitted_vectorizer.pkl')
@@ -26,7 +25,7 @@ def predict(filename):
     data, samplerate = sf.read(filename)
 
     # Convert audio to text
-    with sr.AudioFile('output.wav') as source:
+    with sr.AudioFile(filename) as source:
         audio_data = recognizer.record(source)
         input_text = recognizer.recognize_google(audio_data)
 
